@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6822962737868170140}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.02187286, y: 0.3816679, z: 0.052813716}
+  m_LocalPosition: {x: 0, y: 0.095, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8622600397304547269}
@@ -89,6 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8622600397304547269}
   - component: {fileID: 2244643774089012316}
+  - component: {fileID: 1373743979492623061}
   m_Layer: 0
   m_Name: Queen
   m_TagString: Untagged
@@ -126,9 +127,25 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 0
+  Synchronization: 3
   OwnershipTransfer: 0
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 1373743979492623061}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1373743979492623061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8622600397304547270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 393db0d494ac7c84bb208f82ac5d213a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteMaterial: {fileID: 2100000, guid: 81735cab7b1f03749b959fdb23c2d3bf, type: 2}
+  blackMaterial: {fileID: 2100000, guid: f30b331f9dd1bb6408032b4d6731e8dc, type: 2}
+  render: {fileID: 5083682692139702080}

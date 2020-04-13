@@ -15,87 +15,159 @@ namespace Chess
         End
 
     }
-    public class ChessManager : MonoBehaviourPunCallbacks
+    public class ChessManager : MonoBehaviourPunCallbacks, Photon.Realtime.IPunObservable
     {
 
 
         public GameState currentState;
         PlayerController whitePlayer;
         PlayerController blackPlayer;
+
+        List<Figure> whiteFigures;
+        List<Figure> blackFigures;
+
+        private ChessColor myColor;
+
+
         [SerializeField]
         List<Tile> tiles;
 
-        public readonly Vector3 spawnOffset = Vector3.up*0.6f;
+
+        [SerializeField]
+        GameObject PawnPrefab;
+        [SerializeField]
+        GameObject RookPrefab;
+        [SerializeField]
+        GameObject KnightPrefab;
+        [SerializeField]
+        GameObject BishopPrefab;
+        [SerializeField]
+        GameObject QueenPrefab;
+        [SerializeField]
+        GameObject KingPrefab;
 
 
+
+       
         public void StartGame()
         {
+          
             currentState = GameState.Playing;
-            ChooseSides();
-            PlaceFigures();     
+            if (PhotonNetwork.IsMasterClient)
+                FlipCoin();
+
+           
 
         }
-        private void ChooseSides()
+        private void  FlipCoin()
+        {
+            var flip = UnityEngine.Random.value;
+            RaiseEventOptions options = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
+            SendOptions send = new SendOptions(){ Reliability = true };
+            PhotonNetwork.RaiseEvent(20, flip > 0.5f, options, send); 
+            
+        }
+        private void SetSide(bool isMaster)
         {
             var players = FindObjectsOfType<PlayerController>();
-            var flip = UnityEngine.Random.Range(0, 2);
-            Debug.Log(flip);
-            if (flip == 0)
+            if (isMaster)
             {
+              
                 whitePlayer = players[0];
                 blackPlayer = players[1];
             }
             else
             {
+               
                 whitePlayer = players[1];
                 blackPlayer = players[0];
             }
-        }
-        private void SpawnFigure(string name,Tile tile,ChessColor color)
-        {
 
-           var figure = PhotonNetwork.Instantiate(name, tile.transform.position, Quaternion.identity).GetComponent<Figure>();
-           figure.Init(tile, color);
-            
-
-
-
-
-        }
-        private void SpawnSide(int side,int offset,ChessColor color)
-        {
-           
-            for (int i = 0; i < 8; i++)
+            if (PhotonNetwork.IsMasterClient)
             {
-                SpawnFigure("Pawn", tiles[(side+offset)*8+ i], color);
+                if (isMaster)
+                    myColor = ChessColor.White;
+                else
+                    myColor = ChessColor.Black;
+            }
+            else
+            {
+                if (isMaster)
+                    myColor = ChessColor.Black;
+                else
+                    myColor = ChessColor.White;
             }
 
+            PlaceFigures();
+
+        }
+
+        
+
+
+        private Figure SpawnFigure(GameObject prefab,Tile tile,ChessColor color)
+        {
+           
+           var figure = Instantiate(prefab, tile.transform.position, Quaternion.identity).GetComponent<Figure>();
+           figure.Init(tile, color);
+           tile.Figure = figure;
+           return figure;   
+        }
+        private List<Figure> SpawnSide(int side,ChessColor color,bool rotate=false)
+        {
+            int offset;
+            if (side == 0) offset = 1;
+            else offset = -1;
+            var result = new List<Figure>();
+            //pawns
+            for (int i = 0; i < 8; i++)
+            {
+                result.Add(SpawnFigure(PawnPrefab, tiles[(side + offset) * 8 + i], color));
+            }
             //rooks
+            result.Add(SpawnFigure(RookPrefab, tiles[side * 8], color));
+            result.Add(SpawnFigure(RookPrefab, tiles[side * 8+7], color));
+
             //knights
+            result.Add(SpawnFigure(KnightPrefab, tiles[side * 8 + 1], color));
+            result.Add(SpawnFigure(KnightPrefab, tiles[side * 8 + 6], color));
+
             //bishops
+            result.Add(SpawnFigure(BishopPrefab, tiles[side * 8 + 2], color));
+            result.Add(SpawnFigure(BishopPrefab, tiles[side * 8 + 5], color));
             //queen
+            result.Add(SpawnFigure(QueenPrefab, tiles[side * 8 + 3], color));
+
             //king
-
-
+            result.Add(SpawnFigure(KingPrefab, tiles[side * 8 + 4], color));
+            if (rotate)
+                foreach (var fig in result)
+                {
+                    fig.transform.Rotate(0, 180, 0);
+                }
+            return result;
         }
         private void PlaceFigures()
         {
-           
-            if (whitePlayer.transform.position.y<0)  //master
-            {
-                SpawnSide(0,1, ChessColor.Black);
-                SpawnSide(7,-1, ChessColor.White);
-            }
-            else    //client
-            {
 
-                SpawnSide(0,1, ChessColor.White);
-                SpawnSide(7,-1, ChessColor.Black);
-            }
+           whiteFigures = SpawnSide(0, ChessColor.White, false);
+           blackFigures = SpawnSide(7, ChessColor.Black, true);
+        }
 
+        public void PlayerDoMove(ChessColor player,int start,int end)
+        {
 
         }
 
-     
+        public void OnEvent(EventData photonEvent)
+        {
+            switch (photonEvent.Code)
+            {
+                case 20: //
+                  
+                    SetSide((bool)photonEvent.CustomData);
+                    break;
+            }
+        }
     }
 }

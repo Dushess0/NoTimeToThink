@@ -126,8 +126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteMaterial: {fileID: 2100000, guid: 81735cab7b1f03749b959fdb23c2d3bf, type: 2}
   blackMaterial: {fileID: 2100000, guid: f30b331f9dd1bb6408032b4d6731e8dc, type: 2}
-  graphics: {fileID: 6546346263240116639}
-  renderer: {fileID: 4820431817342467395}
+  render: {fileID: 4820431817342467395}
 --- !u!114 &5495849741893199869
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,17 +9,35 @@ namespace Chess
         public Figure Figure;
         public int x;
         public int y;
+        public int index { get => x + y * 8; }
 
+        public bool isSelected { get; private set; }
 
+        private GameObject selector;
 
-        public void Init(int x,int y)
+        //private void Start()
+        //{
+        //    gameObject.AddComponent<BoxCollider>().size= new Vector3()
+        //}
+
+        public bool IsEmpty { get =>Figure == null;}
+            
+       
+        public void Select(GameObject sel)
         {
-            this.x = x;
-            this.y = y;
+            isSelected = true;
+            selector = Instantiate(sel, this.transform); ;
+           
+
         }
-        public bool isEmpty()
+
+        public void Deselect()
+
         {
-            return Figure == null;
+            isSelected = false;
+            Destroy(selector);
+            selector = null;
+
         }
         
 

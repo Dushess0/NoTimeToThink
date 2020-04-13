@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 4422890337026361589}
+  GUI: {fileID: 0}
 --- !u!114 &2933630776693993144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,10 +62,10 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 0
+  Synchronization: 3
   OwnershipTransfer: 0
   ObservedComponents:
-  - {fileID: 0}
+  - {fileID: 4422890335615185858}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
