@@ -18,6 +18,7 @@ public class SessionManager : MonoBehaviourPunCallbacks, Photon.Realtime.IPunObs
     [SerializeField]
     private Board board;
 
+    GameObject controller;
 
 
 
@@ -28,21 +29,18 @@ public class SessionManager : MonoBehaviourPunCallbacks, Photon.Realtime.IPunObs
      
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Instantiate("Player", Player1Pos.position, Player1Pos.rotation);
+            controller=PhotonNetwork.Instantiate("Player", Player1Pos.position, Player1Pos.rotation);
 
         }
         else
         {
-            PhotonNetwork.Instantiate("Player", Player2Pos.position, Player2Pos.rotation);
+            controller = PhotonNetwork.Instantiate("Player", Player2Pos.position, Player2Pos.rotation);
 
             RaiseEventOptions options = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
             SendOptions send = new SendOptions() { Reliability = true };
             PhotonNetwork.RaiseEvent(15, 0, options, send);
         }
       
-            
-
-
 
     }
     public void Leave()
@@ -65,6 +63,6 @@ public class SessionManager : MonoBehaviourPunCallbacks, Photon.Realtime.IPunObs
     public void OnEvent(EventData photonEvent)
     {
        if (photonEvent.Code==15)
-            chessManager.StartGame();
+            chessManager.StartGame(controller);
     }
 }

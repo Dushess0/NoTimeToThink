@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
+using Chess.UI;
+using Chess.Audio;
 
 namespace Chess
 {
@@ -24,7 +26,12 @@ namespace Chess
         protected Tile tile;
         protected bool isClickable;
         
-
+        public float Cooldown { get; protected set; }
+        public bool ReadyToMove { get; protected set; }
+        protected float speed;
+        protected float timer=0;
+        [SerializeField]
+        protected FigureClock clock;
 
         public virtual List<Tile> GetPossibleMoves(List<Tile> tiles)
         {
@@ -35,20 +42,35 @@ namespace Chess
         /// </summary>
         protected virtual void Start()
         {
+
+            ReadyToMove = true;
             graphics = transform.GetChild(0).gameObject;
-            var photonview = GetComponent<PhotonView>();
-            var transformView = gameObject.AddComponent<PhotonTransformView>();
-            photonview.ObservedComponents.Add(transformView);
+            clock.Init(this);
+            clock.Stop();
+
+           // var photonview = GetComponent<PhotonView>();
+           //var transformView = gameObject.AddComponent<PhotonTransformView>();
+           // photonview.ObservedComponents.Add(transformView);
           
         }
-        
 
 
+        private void Update()
+        {
+            if (!ReadyToMove)
+            {
+                timer += Time.deltaTime;
+                if (timer > Cooldown)
+                {
+                    ReadyToMove = true;
+                    clock.Stop();
+                }
+            }
+        }
         public static void CheckDirection(IEnumerable<Tile> to_check, List<Tile> accumulator, ChessColor color)
         {
             foreach (var item in to_check)
             {
-                Debug.LogFormat("x={0},y={1}", item.x, item.y);
                 if (item.IsEmpty)
                     accumulator.Add(item);
                 else if (item.Figure.color != color)
@@ -65,7 +87,46 @@ namespace Chess
         {
             CheckDirection(to_check, accumulator, this.color);
         }
+        public void Move(Tile end)
+        {
+            BeforeMove();
+            StartCoroutine(MovingCoroutine(transform.position, end));
 
+        }
+        protected virtual void BeforeMove()
+        {
+
+        }
+        IEnumerator MovingCoroutine(Vector3 start,Tile end)
+        {
+            for (float i = 0; i < 1; i+=Time.deltaTime/speed)
+            {
+                transform.position = Vector3.Lerp(start, end.transform.position, i);
+                yield return null;
+            }
+            transform.position = end.transform.position;
+            if (!end.IsEmpty)
+                end.Figure.Death();
+            end.Figure = this;
+            this.tile = end;
+            timer = 0;
+            ReadyToMove = false;
+            clock.Begin();
+            AfterMove();
+        }
+        protected virtual void AfterMove()
+        {
+            
+        }
+           
+       
+        public virtual void Death()
+        {
+            this.tile.Figure = null;
+            Destroy(this.gameObject);
+
+            AudioManager.instance.Play("death");
+        }
         public void Init(Tile tile,ChessColor color)
         {
 
@@ -74,32 +135,12 @@ namespace Chess
             ChangeColor();
            
         }
-     
-       
-        //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        //{
-           
-        //    if (stream.IsWriting)
-        //    {
-        //        stream.SendNext(color);
-        //        stream.SendNext(isClickable);
-        //    }
-        //   else
-        //    {
-        //        color=(ChessColor)stream.ReceiveNext();     
-        //        isClickable = (bool)stream.ReceiveNext();
-        //        ChangeColor();
-        //    }
-        //}
-
-      
         private void ChangeColor()
         {
             if (color == ChessColor.Black)
                 render.material = blackMaterial;
             else
                 render.material = whiteMaterial;
-            
         }
 
       

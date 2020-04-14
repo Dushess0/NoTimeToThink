@@ -20,9 +20,8 @@ namespace Chess
 
 
         public GameState currentState;
-        PlayerController whitePlayer;
-        PlayerController blackPlayer;
-
+        PlayerController controller;
+       
         List<Figure> whiteFigures;
         List<Figure> blackFigures;
 
@@ -47,11 +46,17 @@ namespace Chess
         GameObject KingPrefab;
 
 
+        [SerializeField]
+        GameObject win_label;
+        [SerializeField]
+        GameObject lose_label;
 
-       
-        public void StartGame()
+
+
+
+        public void StartGame(GameObject controller)
         {
-          
+            this.controller = controller.GetComponent<PlayerController>();
             currentState = GameState.Playing;
             if (PhotonNetwork.IsMasterClient)
                 FlipCoin();
@@ -69,20 +74,7 @@ namespace Chess
         }
         private void SetSide(bool isMaster)
         {
-            var players = FindObjectsOfType<PlayerController>();
-            if (isMaster)
-            {
-              
-                whitePlayer = players[0];
-                blackPlayer = players[1];
-            }
-            else
-            {
-               
-                whitePlayer = players[1];
-                blackPlayer = players[0];
-            }
-
+            
             if (PhotonNetwork.IsMasterClient)
             {
                 if (isMaster)
@@ -97,9 +89,11 @@ namespace Chess
                 else
                     myColor = ChessColor.White;
             }
+            if(!isMaster)
+                FindObjectOfType<Board>().transform.Rotate(0, 180, 0);
 
-            PlaceFigures();
-
+            controller.Init(myColor, this);
+            PlaceFigures(isMaster);
         }
 
         
@@ -107,11 +101,14 @@ namespace Chess
 
         private Figure SpawnFigure(GameObject prefab,Tile tile,ChessColor color)
         {
-           
            var figure = Instantiate(prefab, tile.transform.position, Quaternion.identity).GetComponent<Figure>();
            figure.Init(tile, color);
            tile.Figure = figure;
            return figure;   
+        }
+        public void SpawnQueen(Tile tile, ChessColor color)
+        {
+            SpawnFigure(QueenPrefab, tile, color);
         }
         private List<Figure> SpawnSide(int side,ChessColor color,bool rotate=false)
         {
@@ -147,27 +144,75 @@ namespace Chess
                 }
             return result;
         }
-        private void PlaceFigures()
+        private void PlaceFigures(bool isMaster)
         {
 
            whiteFigures = SpawnSide(0, ChessColor.White, false);
            blackFigures = SpawnSide(7, ChessColor.Black, true);
+          
+           if (!isMaster)
+            {
+                foreach (var item in whiteFigures)
+                    item.transform.Rotate(0, 180, 0);
+
+                foreach (var item in blackFigures)
+                    item.transform.Rotate(0, 180, 0);
+                
+            }
+            
+
+          
+
         }
 
-        public void PlayerDoMove(ChessColor player,int start,int end)
+        public void PlayerWantMove(int start, int end)
         {
+            SendOptions send = new SendOptions() { Reliability = true, Encrypt = true };
+            RaiseEventOptions options= new RaiseEventOptions() { Receivers = ReceiverGroup.All };
+            PhotonNetwork.RaiseEvent(30, new int[] { start, end }, options, send);
+           
+        }
 
+        private void MoveFigure(int start, int end)
+        {
+            var start_tile = tiles.Where(tile => tile.index == start).ToList();
+            var end_tile = tiles.Where(tile => tile.index == end).ToList();
+            start_tile[0].Figure.Move(end_tile[0]);
+            start_tile[0].Figure = null;
+  
         }
 
         public void OnEvent(EventData photonEvent)
         {
             switch (photonEvent.Code)
             {
-                case 20: //
-                  
+                case 20:    
                     SetSide((bool)photonEvent.CustomData);
                     break;
+                case 30:
+                    var data = (int[])photonEvent.CustomData;
+                    MoveFigure(data[0], data[1]);
+                    break;
+                case 100:
+                    if ((ChessColor)(int)photonEvent.CustomData == myColor)
+                    {
+                        win_label.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        lose_label.gameObject.SetActive(true);
+                    }
+                    Invoke("Leave", 5);
+                    break;
+
             }
         }
+        private void Leave()
+        {
+            PhotonNetwork.LeaveRoom();
+
+        }
+
+      
     }
 }

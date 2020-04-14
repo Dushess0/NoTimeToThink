@@ -12,7 +12,7 @@ namespace Chess
     {
         [SerializeField]
         private Camera cam;
-        private ChessColor color;
+        public ChessColor color { get; private set; }
 
         public ChessGUI GUI;
 
@@ -32,17 +32,11 @@ namespace Chess
             {
                 EnableCamera();
                 GUI = FindObjectOfType<ChessGUI>();
+                GUI.player = this;
             }
-            else
-            {
-                Debug.Log("not mine");
-            }
+           
         }
-        [PunRPC]
-        public void RotateBoard()
-        {
-            FindObjectOfType<Board>().transform.Rotate(0, 180, 0);
-        }
+   
         public void EnableCamera()
         {
             cam.gameObject.SetActive(true);
@@ -64,8 +58,9 @@ namespace Chess
                     var tile = hit.transform.GetComponent<Tile>();
                     if (tile)
                     {
+                     
                         if (GUI.ProcessTile(tile))
-                          photonView.RPC("DoMove", RpcTarget.MasterClient, GUI.lastSelected.index, tile.index);
+                            manager.PlayerWantMove(GUI.lastSelected.index, tile.index);
                     }
                     //todo check colllisions with figures
 
@@ -75,15 +70,8 @@ namespace Chess
                 
             }
         }
-        [PunRPC]
-        public void DoMove(int start,int end)
-        {
-            if (manager)
-            {
-                Debug.Log("player do move");
-                manager.PlayerDoMove(this.color, start, end);
-            }
-        }
+      
+     
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
 

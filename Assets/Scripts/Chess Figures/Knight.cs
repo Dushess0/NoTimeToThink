@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Chess.Audio;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,6 +8,14 @@ namespace Chess.Figures
 {
     public class Knight : Figure
     {
+        protected override void Start()
+        {
+            base.Start();
+            this.Cooldown = 5;
+            this.speed = 0.5f;
+
+        }
+       
         public override List<Tile> GetPossibleMoves(List<Tile> tiles)
         {
 
@@ -17,6 +26,11 @@ namespace Chess.Figures
             result.AddRange(g);
 
             return result;
+        }
+
+        protected override void BeforeMove()
+        {
+            AudioManager.instance.Play("knight");
         }
     }
 }

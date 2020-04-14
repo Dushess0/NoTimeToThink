@@ -2,10 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Chess.Audio;
+
 namespace Chess.Figures
 {
     public class Bishop : Figure
     {
+
+        protected override void Start()
+        {
+            base.Start();
+            this.Cooldown = 6;
+            this.speed = 1;
+
+        }
+
         public override List<Tile> GetPossibleMoves(List<Tile> tiles)
         {
 
@@ -39,6 +50,10 @@ namespace Chess.Figures
             return result;
 
         }
+        //protected override void BeforeMove()
+        //{
+        //    AudioManager.instance.Play("bishop");
+        //}
 
     }
 }
