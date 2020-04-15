@@ -11,8 +11,8 @@ namespace Chess.Figures
         protected override void Start()
         {
             base.Start();
-            this.Cooldown = 6;
-            this.speed = 2;
+            this.Cooldown = 5;
+            this.speed = 1;
 
         }
         public override List<Tile> GetPossibleMoves(List<Tile> tiles)

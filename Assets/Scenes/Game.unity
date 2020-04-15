@@ -856,8 +856,8 @@ MonoBehaviour:
     type: 3}
   KingPrefab: {fileID: 1920988185437336658, guid: ffa2009300daa8d45b0b8ba8686c245a,
     type: 3}
-  win_label: {fileID: 1956007524}
-  lose_label: {fileID: 605893895}
+  win_label: {fileID: 605893895}
+  lose_label: {fileID: 1956007524}
 --- !u!1 &1899030588
 GameObject:
   m_ObjectHideFlags: 0
