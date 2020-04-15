@@ -14,6 +14,10 @@ It is multiplayer chess-like game. Figures moves just like in chess and the goal
 ### 5) There is No Time To Read this readme, just download and play the game. (Click the "Releases" button on top of the page to find the latest release)
 
 ## Some screenshots and videos if you want: 
+### Videos
+
+https://www.youtube.com/watch?v=-vBfoVOFhcI
+
 ### Screenshots
 Main menu
 ![main_menu](https://i.imgur.com/nO7FYgM.png)
@@ -24,7 +28,4 @@ Start of the game
 End of the game
 ![endgame](https://i.imgur.com/BteEoX7.png)
 
-### Videos
-
-https://www.youtube.com/watch?v=-vBfoVOFhcI
 
