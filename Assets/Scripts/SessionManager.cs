@@ -43,6 +43,7 @@ public class SessionManager : MonoBehaviourPunCallbacks, Photon.Realtime.IPunObs
       
 
     }
+   
     public void Leave()
     {
         PhotonNetwork.LeaveRoom();
