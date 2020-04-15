@@ -8,7 +8,7 @@ It is multiplayer chess-like game. Figures moves just like in chess and the goal
    i. Double the fun
    ii. There is no anticheat in game
    iii. Faster matchmaking
-3) There are a dozens of hidden mechanics (they are not bugs, they are features :)  You can find most of them on wiki but I recommend you to find them all without reading wiki.
+3) There are a dozens of hidden mechanics (they are not bugs, they are features :)  You can find most of them on wiki (there is no wiki yet) but I recommend you to find them all without reading wiki.
 4) This beatifull music written by Will Halimou! Check his soundcloud https://soundcloud.com/williamhalimou/sets/chess-music
 
 ### 5) There is No Time To Read this readme, just download and play the game. (Click the "Releases" button on top of the page to find the latest release)
