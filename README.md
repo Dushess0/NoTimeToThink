@@ -1,6 +1,8 @@
 # NoTimeToThink
+## Play on itch.io! https://dushess0.itch.io/no-time-to-think
 ## About the game
 It is multiplayer chess-like multiplayer game. Figures move just like in chess and the goal is kill enemy king. There are no turns both players make their moves independently, but every figure has different move speed and cooldown.
+
 
 ## Things to remember
 1) There are only 20 players online possible. (I am using Photon free plan)
